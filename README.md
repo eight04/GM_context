@@ -16,7 +16,7 @@ const items = [{
 			// ...
 		}
 	}, {
-		type: "separater"
+		type: "separator"
 	}, {
 		type: "item",
 		label: "Google",
@@ -57,7 +57,11 @@ Remove the menu.
 Define a menu item
 ------------------
 
-Each item may contain `onclick` callback, which would recieve an [`contextmenu` event](https://developer.mozilla.org/en-US/docs/Web/Events/contextmenu).
+The event handler on the item would recieve a [`contextmenu` event](https://developer.mozilla.org/en-US/docs/Web/Events/contextmenu).
+
+All types of items may contain following global properties:
+
+* disabled: boolean.
 
 ### submenu
 
@@ -68,6 +72,16 @@ A submenu.
 	type: "submenu",
 	label: "The label",
 	items: [/* a list of menu item */]
+}
+```
+
+### separator
+
+A separator.
+
+```js
+{
+	type: "separator"
 }
 ```
 
@@ -93,27 +107,29 @@ An item which could be checked/unchecked.
 {
 	type: "checkbox",
 	label: "The label",
+	checked: true,
 	onclick(e, isChecked) {
 		// ...
 	}
 }
 ```
 
-### radio
+### radiogroup
 
-A radio submenu, which is a group of checkbox. When an item is checked, the others are unchecked.
+A group of checkbox. When an item is checked, the others are unchecked. It is suggested to separate radiogroup with other items, or display it in a submenu.
 
 ```js
 {
-	type: "radio",
-	label: "The label",
-	select: {
-		// {id: label}
-		item1: "Item 1",
-		item2: "Item 2"
-	},
-	default: "item1",
-	onclick(e, id) {
+	type: "radiogroup",
+	items: [{
+		label: "Item 1",
+		checked: true,
+		value: "item1"
+	}, {
+		label: "Item 2",
+		value: "item2"
+	}],
+	onchange(e, value) {
 		// ...
 	}
 }
