@@ -25,7 +25,7 @@ const items = [{
 		}
 	}]
 }];
-GM_context.create({
+GM_context.add({
 	context: ["image"],
 	items: items
 });
@@ -116,7 +116,7 @@ An item which could be checked/unchecked.
 
 ### radiogroup
 
-A group of checkbox. When an item is checked, the others are unchecked. It is suggested to separate radiogroup with other items, or display it in a submenu.
+A group of checkbox. When an item is checked, the others are unchecked. It is suggested to separate radiogroup from other items, or display it in a submenu.
 
 ```js
 {
