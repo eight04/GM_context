@@ -48,17 +48,17 @@ API reference
 
 Create a menu. `options` contain following properties:
 
-* context: array of string. A list of valid context type that the context menu should apply to. Possible values are:
+* `context`: array of string. A list of valid context type that the context menu should apply to. Possible values are:
 
-	- page: when there is no other context type matched.
-	- image: match images.
-	- link: match links.
-	- editable: match editable target.
-	- selection: when part of the page is selected.
+	- `page`: when there is no other context type matched.
+	- `image`: match images.
+	- `link`: match links.
+	- `editable`: match editable target.
+	- `selection`: when part of the page is selected.
 	
 	If this property is missing, the menu is globally applied.
 
-* items: array of object. A list of items. See [Define a menu item](#define-a-menu-item).
+* `items`: array of object. A list of items. See [Define a menu item](#define-a-menu-item).
 
 ### GM_context.remove(menuId)
 
@@ -67,82 +67,28 @@ Remove the menu.
 Define a menu item
 ------------------
 
-The event handler on the item would recieve a [`contextmenu` event](https://developer.mozilla.org/en-US/docs/Web/Events/contextmenu).
+An item may have following properties:
 
-All types of items may contain following global properties:
+* `checked`: boolean. Only available to `checkbox` and `radiogroup`s items.
+* `disabled`: boolean. To disable an item.
+* `icon`: string. Image URL, used to provide a picture to represent the command.
+* `items`: array of object. Define sub-items. Only available to `submenu` and `radiogroup` type. A submenu may contain any type of the items, but the items of radiogroup can only define `label`, `checked`, and `value` properties.
+* `label`: string. The label of the item. The label may contain a special string `%s` which would be replaced with the value of `window.getSelection()`.
+* `onclick`: function. Called when the item is clicked. *It would recieve a [`contextmenu` event](https://developer.mozilla.org/en-US/docs/Web/Events/contextmenu) not click event*. Also, a `checkbox` type item would recieve a boolean to indicate if the item is checked.
+* `onchange`: function. Only available to `radiogroup`. The handler would recieve following params:
 
-* disabled: boolean.
-
-### menuitem
-
-Default menuitem, don't specify type property.
-
-```js
-{
-	label: "The label",
-	onclick(e) {
-		// ...
-	}
-}
-```
-
-### submenu
-
-A submenu.
-
-```js
-{
-	type: "submenu",
-	label: "The label",
-	items: [/* a list of menu item */]
-}
-```
-
-### separator
-
-A separator.
-
-```js
-{
-	type: "separator"
-}
-```
-
-### checkbox
-
-An item which could be checked/unchecked.
-
-```js
-{
-	type: "checkbox",
-	label: "The label",
-	checked: true,
-	onclick(e, isChecked) {
-		// ...
-	}
-}
-```
-
-### radiogroup
-
-A group of checkbox. When an item is checked, the others are unchecked. It is suggested to separate radiogroup from other items, or display it in a submenu.
-
-```js
-{
-	type: "radiogroup",
-	items: [{
-		label: "Item 1",
-		checked: true,
-		value: "item1"
-	}, {
-		label: "Item 2",
-		value: "item2"
-	}],
-	onchange(e, value) {
-		// ...
-	}
-}
-```
+	- `contextmenu` event.
+	- the value of the item currently choosed.
+	
+* `type`: string. Define different type of menuitem. Available values are:
+	
+	- `command`: A normal menuitem. (default)
+	- `submenu`: A submenu.
+	- `separator`: A separator.
+	- `checkbox`: An item which can be checked/unchecked.
+	- `radiogroup`: A group of checkbox. When an item is checked, the others are unchecked. It is suggested to separate radiogroup from other items, or display it in a submenu.
+	
+* `value`: string. Only available to `radiogroup`'s items. The value is passed to `onchange` handler as the second parameter.
 
 Changelog
 ---------
