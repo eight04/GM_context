@@ -93,6 +93,6 @@ An item may have following properties:
 Changelog
 ---------
 
-* 0.1.0
+* 0.1.0 (Sep 8, 2017)
 
     - First release.

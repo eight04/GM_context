@@ -15,7 +15,7 @@
     "lint": "eslint **/*.js",
     "test": "npm run lint",
     "preversion": "npm test",
-    "version": "userscript-meta -u GM_context.js",
+    "version": "userscript-meta -u GM_context.js && git add .",
     "postversion": "git push --follow-tags && npm publish"
   },
   "devDependencies": {
