@@ -3,33 +3,43 @@ GM_context
 
 A JavaScript library to create native HTML5 contextmenu in the browser. This library is designed for userscripts.
 
+Compatibility
+-------------
+
+It uses native HTML5 `<menu>` and `<menuitem>` to build the context menu, so:
+
+1. [It only works on latest Firefox](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem#Browser_compatibility).
+2. It doesn't replace the original context menu but extends it.
+
 Usage
 -----
 ```js
-const items = [{
-	type: "menu",
-	label: "Reverse image search",
-	items: [{
-		type: "item",
-		label: "TinEye",
-		onclick(e) {
-			// ...
-		}
-	}, {
-		type: "separator"
-	}, {
-		type: "item",
-		label: "Google",
-		onclick(e) {
-			// ...
-		}
-	}]
-}];
 GM_context.add({
 	context: ["image"],
-	items: items
+	items: [{
+		type: "submenu",
+		label: "Reverse image search",
+		items: [{
+			label: "TinEye",
+			onclick(e) {
+				// ...
+			}
+		}, {
+			type: "separator"
+		}, {
+			label: "Google",
+			onclick(e) {
+				// ...
+			}
+		}]
+	}]
 });
 ```
+
+Demo
+----
+
+https://rawgit.com/eight04/GM_context/master/demo.html
 
 API reference
 -------------
