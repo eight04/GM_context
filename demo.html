@@ -18,7 +18,8 @@
 				disabled: true,
 				onclick() {alert("disabled")}
 			}, {
-				type: "separator"
+				label: "A command with icon",
+				icon: "https://assets-cdn.github.com/favicon.ico"
 			}, {
 				type: "submenu",
 				label: "A submenu",
@@ -32,6 +33,8 @@
 				label: "A checkbox",
 				checked: true,
 				onclick(e, checked) {alert(checked)}
+			}, {
+				type: "separator"
 			}, {
 				type: "radiogroup",
 				items: [{
@@ -72,6 +75,7 @@
 			}]
 		});
 		
+		// editable
 		GM_context.add({
 			context: ["editable"],
 			items: [{
