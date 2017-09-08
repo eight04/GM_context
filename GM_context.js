@@ -1,3 +1,15 @@
+// ==UserScript==
+// @name gm-context
+// @version 0.0.0
+// @description A html5 contextmenu library
+// @supportURL https://github.com/eight04/GM_context/issues
+// @license MIT
+// @author eight04 <eight04@gmail.com> (https://github.com/eight04)
+// @homepageURL https://github.com/eight04/GM_context
+// @compatible firefox >=8
+// @grant none
+// ==/UserScript==
+
 /* exported GM_context */
 
 const GM_context = (function() {
