@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name gm-context
+// @name GM_context
 // @version 0.1.0
 // @description A html5 contextmenu library
 // @supportURL https://github.com/eight04/GM_context/issues
