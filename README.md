@@ -63,6 +63,19 @@ All types of items may contain following global properties:
 
 * disabled: boolean.
 
+### menuitem
+
+Default menuitem, don't specify type property.
+
+```js
+{
+	label: "The label",
+	onclick(e) {
+		// ...
+	}
+}
+```
+
 ### submenu
 
 A submenu.
@@ -82,20 +95,6 @@ A separator.
 ```js
 {
 	type: "separator"
-}
-```
-
-### item
-
-Normal item.
-
-```js
-{
-	type: "item",
-	label: "The label",
-	onclick(e) {
-		// ...
-	}
 }
 ```
 

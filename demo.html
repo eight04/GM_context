@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+	<script src="GM_context.js"></script>
+	<script>
+		// different types of menu items
+		GM_context.add({
+			context: ["page"],
+			items: [{
+				label: "A normal command",
+				onclick() {alert("hello")}
+			}, {
+				label: "A disabled item",
+				disabled: true,
+				onclick() {alert("disabled")}
+			}, {
+				type: "separator"
+			}, {
+				type: "submenu",
+				label: "A submenu",
+				items: [{
+					label: "Item 1"
+				}, {
+					label: "Item 2"
+				}]
+			}, {
+				type: "checkbox",
+				label: "A checkbox",
+				checked: true,
+				onclick(e, checked) {alert(checked)}
+			}, {
+				type: "radiogroup",
+				items: [{
+					label: "Radio 1",
+					value: 1
+				}, {
+					label: "Radio 2",
+					value: 2,
+					checked: true
+				}],
+				onchange(e, value) {alert(value)}
+			}]
+		});
+		
+		// different contexts
+		GM_context.add({
+			context: ["link", "image"],
+			items: [{
+				label: "Copy URL",
+				onclick(e) {
+					const urls = ["a", "img"]
+						.map(s => e.target.closest(s))
+						.filter(i => i)
+						.map(e => e.href || e.src);
+					alert(urls);
+				}
+			}]
+		});
+		
+		// selection
+		GM_context.add({
+			context: ["selection"],
+			items: [{
+				label: "Search for '%s'",
+				onclick(e) {
+					alert(document.getSelection());
+				}
+			}]
+		});
+		
+		GM_context.add({
+			context: ["editable"],
+			items: [{
+				label: "Clear",
+				onclick(e) {
+					if (e.target.value) {
+						e.target.value = "";
+					}
+					if (e.target.textContent !== undefined) {
+						e.target.textContent = "";
+					}
+				}
+			}]
+		});
+	</script>
+</head>
+<body>
+	<p>Right-click on different items and see the change of the contextmenu.</p>
+	<img src="http://via.placeholder.com/100x100" alt="">
+	<input type="text">
+	<textarea name="" id="" cols="30" rows="10"></textarea>
+	<div style="border: 1px dashed black; min-height: 5em" contenteditable>Editable area</div>
+	<a href="http://www.example.com">example.com</a>
+</body>
+</html>
