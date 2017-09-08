@@ -74,11 +74,11 @@ An item may have following properties:
 * `icon`: string. Image URL, used to provide a picture to represent the command.
 * `items`: array of object. Define sub-items. Only available to `submenu` and `radiogroup` type. A submenu may contain any type of the items, but the items of radiogroup can only define `label`, `checked`, and `value` properties.
 * `label`: string. The label of the item. The label may contain a special string `%s` which would be replaced with the value of `window.getSelection()`.
-* `onclick`: function. Called when the item is clicked. *It would recieve a [`contextmenu` event](https://developer.mozilla.org/en-US/docs/Web/Events/contextmenu) not click event*. Also, a `checkbox` type item would recieve a boolean to indicate if the item is checked.
+* `onclick`: function. Called when the item is clicked. *It would recieve a [`contextmenu` event](https://developer.mozilla.org/en-US/docs/Web/Events/contextmenu) not a click event*. Also, `checkbox` type items would recieve a boolean to indicate if the item is checked.
 * `onchange`: function. Only available to `radiogroup`. The handler would recieve following params:
 
 	- `contextmenu` event.
-	- the value of the item currently choosed.
+	- The value of the item currently choosed.
 	
 * `type`: string. Define different type of menuitem. Available values are:
 	
