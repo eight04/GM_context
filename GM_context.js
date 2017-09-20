@@ -41,7 +41,7 @@ const GM_context = (function() {
 			if (menu.oncontext && menu.oncontext(e) === false) {
 				continue;
 			}
-			if (!menu.el) {
+			if (!menu.isBuilt) {
 				buildMenu(menu);
 			}
 			if (!menu.static) {
@@ -135,14 +135,15 @@ const GM_context = (function() {
 	}
 	
 	function buildMenu(menu) {
-		menu.el = buildItems(null, menu.items);
+		const el = buildItems(null, menu.items);
 		menu.startEl = document.createComment(`<menu ${menu.id}>`);
-		menu.el.prepend(menu.startEl);
+		el.prepend(menu.startEl);
 		menu.endEl = document.createComment("</menu>");
-		menu.el.append(menu.endEl);
+		el.append(menu.endEl);
 		if (menu.static == null) {
 			menu.static = checkStatic(menu);
 		}
+		menu.frag = el;
 		menu.isBuilt = true;
 	}
 	
@@ -172,15 +173,13 @@ const GM_context = (function() {
 			item.id = `gm-context-radio-${inc()}`;
 			item.startEl = document.createComment(`<radiogroup ${item.id}>`);
 			el.appendChild(item.startEl);
-			item.items.forEach(i => {
-				i.type = "radio";
-				i.radiogroup = item.id;
-			});
 			el = buildItems(item, item.items);
 			item.endEl = document.createComment("</radiogroup>");
 			el.appendChild(item.endEl);
-		} else if (item.type == "radio") {
+		} else if (parent && parent.type == "radiogroup") {
 			el = document.createElement("menuitem");
+			item.type = "radio";
+			item.radiogroup = parent.id;
 			Object.assign(el, item);
 			if (parent.onchange || item.onclick) {
 				el.onclick = () => {
@@ -219,12 +218,12 @@ const GM_context = (function() {
 	
 	// attach menu to DOM
 	function appendMenu(container, menu) {
-		container.appendChild(menu.el);
+		container.appendChild(menu.frag);
 		return () => {
 			const range = document.createRange();
 			range.setStartBefore(menu.startEl);
 			range.setEndAfter(menu.endEl);
-			menu.el = range.extractContents();
+			menu.frag = range.extractContents();
 		};
 	}
 	
@@ -255,6 +254,8 @@ const GM_context = (function() {
 		}
 		Object.assign(item, changes);
 		if (item.el) {
+			delete changes.onclick;
+			delete changes.onchange;
 			Object.assign(item.el, changes);
 		}
 	}
@@ -268,7 +269,7 @@ const GM_context = (function() {
 			} else {
 				// search from end, so it would be faster to insert multiple item to end
 				let ref = parent.endEl,
-					i = pos < 0 ? +pos : parent.items.length - pos;
+					i = pos < 0 ? -pos : parent.items.length - pos;
 				while (i-- && ref) {
 					ref = ref.previousSibling;
 				}
