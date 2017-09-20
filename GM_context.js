@@ -17,7 +17,7 @@ const GM_context = (function() {
 		"text", "number", "email", "number", "search", "tel", "url"
 	];
 	
-	const menus = new Map;
+	const menus = new Set;
 	
 	const inc = function() {
 		let i = 1;
@@ -32,7 +32,7 @@ const GM_context = (function() {
 		contextEvent = e;
 		contextSelection = document.getSelection() + "";
 		const context = getContext(e);
-		const matchedMenus = [...menus.values()]
+		const matchedMenus = [...menus]
 			.filter(m => !m.context || m.context.some(c => context.has(c)));
 		if (!matchedMenus.length) return;
 		const {el: container, destroy: destroyContainer} = createContainer(e);
@@ -230,13 +230,12 @@ const GM_context = (function() {
 	// add a menu
 	function add(menu) {
 		menu.id = inc();
-		menus.set(menu.id, menu);
-		return menu.id;
+		menus.add(menu);
 	}
 	
 	// remove a menu
-	function remove(id) {
-		menus.delete(id);
+	function remove(menu) {
+		menus.delete(menu);
 	}
 	
 	// update item's properties. If @changes includes a `items` key, it would replace item's children.
