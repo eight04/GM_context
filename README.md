@@ -39,14 +39,15 @@ GM_context.add({
 Demo
 ----
 
-https://rawgit.com/eight04/GM_context/master/demo.html
+* [Basic](https://rawgit.com/eight04/GM_context/master/demo/basic.html)
+* [Dynamic manipulation](https://rawgit.com/eight04/GM_context/master/demo/dynamic-manipulation.html)
 
 API reference
 -------------
 
-### GM_context.add(options: object) -> menuId
+### GM_context.add(menu: object)
 
-Create a menu. `options` contain following properties:
+Add a menu. The `menu` object contains following properties:
 
 * `context`: array of string. A list of valid context type that the context menu should apply to. Possible values are:
 
@@ -59,10 +60,44 @@ Create a menu. `options` contain following properties:
 	If this property is missing, the menu is globally applied.
 
 * `items`: array of object. A list of items. See [Define a menu item](#define-a-menu-item).
+* `oncontext`: function. An event handler to handle contextmenu event, which would be called after `context` property is matched. The function may return `false` to not show the menu.
 
-### GM_context.remove(menuId)
+### GM_context.remove(menu: object)
 
 Remove the menu.
+
+### GM_context.update(item: object, changes: object)
+
+Update the property of an item. If `changes` object contains `items`, it would replace all sub-items with it.
+
+```
+const myCheckbox = {
+	type: "checkbox",
+	label: "A checkbox"
+};
+GM_context.add({items: [myCheckbox]});
+
+function toggleCheckbox() {
+	GM_context.update(myCheckbox, {
+		checked: !myCheckbox.checked
+	});
+}
+```
+
+### GM_context.addItem(parent: object, item: object, position: number)
+
+Add a sub-item to parent.
+
+* `parent`: Must be `submenu`, `radiogroup`, or the menu itself.
+* `item`: The item to add. See [Define a menu item](#define-a-menu-item).
+* `position`: Where the item should insert to. Negative value is allowed. Default to `parent.items.length`.
+
+### GM_context.removeItem(parent: object, item: object)
+
+Remove a sub-item from parent.
+
+* `parent`: Must be `submenu`, `radiogroup`, or the menu itself.
+* `item`: The item to remove.
 
 Define a menu item
 ------------------
