@@ -136,24 +136,26 @@ const GM_context = (function() {
 	}
 	
 	function buildMenu(menu) {
-		menu.el = buildItems(menu.items);
+		menu.el = buildItems(null, menu.items);
 		menu.startEl = menu.el.firstChild;
 		menu.endEl = menu.el.lastChild;
-		menu.static = checkStatic(menu);
+		if (menu.static == null) {
+			menu.static = checkStatic(menu);
+		}
 	}
 	
 	function buildLabel(s) {
 		return s.replace(/%s/g, contextSelection);
 	}
 	
-	function buildItems(items) {
+	function buildItems(parent, items) {
 		const root = document.createDocumentFragment();
 		for (const item of items) {
 			let el;
 			if (item.type == "submenu") {
 				el = document.createElement("menu");
 				Object.assign(el, item, {items: null});
-				el.appendChild(buildItems(item.items));
+				el.appendChild(buildItems(item, item.items));
 			} else if (item.type == "separator") {
 				el = document.createElement("hr");
 			} else if (item.type == "checkbox") {
@@ -166,19 +168,23 @@ const GM_context = (function() {
 				}
 			} else if (item.type == "radiogroup") {
 				item.id = `gm-context-radio-${inc()}`;
-				el = document.createDocumentFragment();
-				for (const i of item.items) {
-					const iEl = document.createElement("menuitem");
-					iEl.type = "radio";
-					iEl.radiogroup = item.id;
-					Object.assign(iEl, i);
-					if (item.onchange) {
-						iEl.onclick = () => {
-							item.onchange.call(iEl, contextEvent, i.value);
-						};
-					}
-					i.el = iEl;
-					el.appendChild(iEl);
+				item.items.forEach(i => {
+					i.type = "radio";
+					i.radiogroup = item.id;
+				});
+				el = buildItems(item, item.items);
+			} else if (item.type == "radio") {
+				el = document.createElement("menuitem");
+				Object.assign(el, item);
+				if (parent.onchange || item.onclick) {
+					el.onclick = () => {
+						if (parent.onchange) {
+							parent.onchange.call(el, contextEvent, item.value);
+						}
+						if (item.onclick) {
+							item.onclick.call(el, contextEvent);
+						}
+					};
 				}
 			} else {
 				el = document.createElement("menuitem");
@@ -216,5 +222,23 @@ const GM_context = (function() {
 		menus.delete(id);
 	}
 	
-	return {add, remove};
+	function update(id, item, changes) {
+		const menu = menus.get(id);
+		if (changes.items) {
+			item.items.forEach(i => i.el && i.el.remove());
+			item.items.length = 0;
+			changes.items.forEach(i => addItem(id, item, i));
+			delete changes.items;
+		}
+		Object.assign(item, changes);
+		if (item.el) {
+			
+		}
+	}
+	
+	function addItem(id, parent, item, insertBefore) {}
+	
+	function removeItem(id, parent, item) {}
+	
+	return {add, remove, update, addItem, removeItem};
 })();
