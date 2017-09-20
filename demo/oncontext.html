@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+	<script src="../GM_context.js"></script>
+	<script>
+		// hold object reference
+		const item = {label: "A normal item"};
+		GM_context.add({
+			items: [item],
+			oncontext(e) {
+				GM_context.update(item, {
+					label: `You clicked on ${e.target.nodeName}`
+				});
+			}
+		});
+	</script>
+</head>
+<body>
+	<p>An example to show how to use <code>oncontext</code> handler</p>
+	<img src="http://via.placeholder.com/100x100" alt="">
+	<input type="text">
+	<textarea name="" id="" cols="30" rows="10"></textarea>
+	<div style="border: 1px dashed black; min-height: 5em" contenteditable>Editable area</div>
+	<a href="http://www.example.com">example.com</a>
+</body>
+</html>

@@ -41,6 +41,7 @@ Demo
 
 * [Basic](https://rawgit.com/eight04/GM_context/master/demo/basic.html)
 * [Dynamic manipulation](https://rawgit.com/eight04/GM_context/master/demo/dynamic-manipulation.html)
+* [oncontext handler](https://rawgit.com/eight04/GM_context/master/demo/oncontext.html)
 
 API reference
 -------------
