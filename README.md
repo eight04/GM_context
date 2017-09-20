@@ -105,7 +105,7 @@ Define a menu item
 
 An item may have following properties:
 
-* `checked`: boolean. Only available to `checkbox` and `radiogroup`s items.
+* `checked`: boolean. Only available to `checkbox` and `radiogroup`'s items.
 * `disabled`: boolean. To disable an item.
 * `icon`: string. Image URL, used to provide a picture to represent the command.
 * `items`: array of object. Define sub-items. Only available to `submenu` and `radiogroup` type. A submenu may contain any type of the items, but the items of radiogroup can only define `label`, `checked`, and `value` properties.
