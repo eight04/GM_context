@@ -38,11 +38,14 @@ const GM_context = (function() {
 		const {el: container, destroy: destroyContainer} = createContainer(e);
 		const removeMenus = [];
 		for (const menu of matchedMenus) {
+			if (menu.oncontext && menu.oncontext(e) === false) {
+				continue;
+			}
 			if (!menu.el) {
 				buildMenu(menu);
 			}
 			if (!menu.static) {
-				updateMenu(menu);
+				updateLabel(menu.items);
 			}
 			removeMenus.push(appendMenu(container, menu));
 		}
@@ -54,11 +57,7 @@ const GM_context = (function() {
 		});
 	});
 	
-	function updateMenu(menu) {
-		// update label
-		updateItems(menu.items);
-	}
-	
+	// check if there are dynamic label
 	function checkStatic(menu) {
 		return checkItems(menu.items);
 		
@@ -75,13 +74,13 @@ const GM_context = (function() {
 		}
 	}
 	
-	function updateItems(items) {
+	function updateLabel(items) {
 		for (const item of items) {
 			if (item.label && item.el) {
 				item.el.label = buildLabel(item.label);
 			}
 			if (item.items) {
-				updateItems(item.items);
+				updateLabel(item.items);
 			}
 		}
 	}
@@ -137,72 +136,88 @@ const GM_context = (function() {
 	
 	function buildMenu(menu) {
 		menu.el = buildItems(null, menu.items);
-		menu.startEl = menu.el.firstChild;
-		menu.endEl = menu.el.lastChild;
+		menu.startEl = document.createComment(`<menu ${menu.id}>`);
+		menu.el.prepend(menu.startEl);
+		menu.endEl = document.createComment("</menu>");
+		menu.el.append(menu.endEl);
 		if (menu.static == null) {
 			menu.static = checkStatic(menu);
 		}
+		menu.isBuilt = true;
 	}
 	
 	function buildLabel(s) {
 		return s.replace(/%s/g, contextSelection);
 	}
 	
+	// build item's element
+	function buildItem(parent, item) {
+		let el;
+		if (item.type == "submenu") {
+			el = document.createElement("menu");
+			Object.assign(el, item, {items: null});
+			el.appendChild(buildItems(item, item.items));
+		} else if (item.type == "separator") {
+			el = document.createElement("hr");
+		} else if (item.type == "checkbox") {
+			el = document.createElement("menuitem");
+			Object.assign(el, item);
+			if (item.onclick) {
+				el.onclick = () => {
+					item.onclick.call(el, contextEvent, el.checked);
+				};
+			}
+		} else if (item.type == "radiogroup") {
+			el = document.createDocumentFragment();
+			item.id = `gm-context-radio-${inc()}`;
+			item.startEl = document.createComment(`<radiogroup ${item.id}>`);
+			el.appendChild(item.startEl);
+			item.items.forEach(i => {
+				i.type = "radio";
+				i.radiogroup = item.id;
+			});
+			el = buildItems(item, item.items);
+			item.endEl = document.createComment("</radiogroup>");
+			el.appendChild(item.endEl);
+		} else if (item.type == "radio") {
+			el = document.createElement("menuitem");
+			Object.assign(el, item);
+			if (parent.onchange || item.onclick) {
+				el.onclick = () => {
+					if (parent.onchange) {
+						parent.onchange.call(el, contextEvent, item.value);
+					}
+					if (item.onclick) {
+						item.onclick.call(el, contextEvent);
+					}
+				};
+			}
+		} else {
+			el = document.createElement("menuitem");
+			Object.assign(el, item);
+			if (item.onclick) {
+				el.onclick = () => {
+					item.onclick.call(el, contextEvent);
+				};
+			}
+		}
+		if (!(el instanceof DocumentFragment)) {
+			item.el = el;
+		}
+		item.isBuilt = true;
+		return el;
+	}
+	
+	// build items' element
 	function buildItems(parent, items) {
 		const root = document.createDocumentFragment();
 		for (const item of items) {
-			let el;
-			if (item.type == "submenu") {
-				el = document.createElement("menu");
-				Object.assign(el, item, {items: null});
-				el.appendChild(buildItems(item, item.items));
-			} else if (item.type == "separator") {
-				el = document.createElement("hr");
-			} else if (item.type == "checkbox") {
-				el = document.createElement("menuitem");
-				Object.assign(el, item);
-				if (item.onclick) {
-					el.onclick = () => {
-						item.onclick.call(el, contextEvent, el.checked);
-					};
-				}
-			} else if (item.type == "radiogroup") {
-				item.id = `gm-context-radio-${inc()}`;
-				item.items.forEach(i => {
-					i.type = "radio";
-					i.radiogroup = item.id;
-				});
-				el = buildItems(item, item.items);
-			} else if (item.type == "radio") {
-				el = document.createElement("menuitem");
-				Object.assign(el, item);
-				if (parent.onchange || item.onclick) {
-					el.onclick = () => {
-						if (parent.onchange) {
-							parent.onchange.call(el, contextEvent, item.value);
-						}
-						if (item.onclick) {
-							item.onclick.call(el, contextEvent);
-						}
-					};
-				}
-			} else {
-				el = document.createElement("menuitem");
-				Object.assign(el, item);
-				if (item.onclick) {
-					el.onclick = () => {
-						item.onclick.call(el, contextEvent);
-					};
-				}
-			}
-			if (item.type != "radiogroup") {
-				item.el = el;
-			}
-			root.appendChild(el);
+			root.appendChild(buildItem(parent, item));
 		}
 		return root;
 	}
 	
+	// attach menu to DOM
 	function appendMenu(container, menu) {
 		container.appendChild(menu.el);
 		return () => {
@@ -213,32 +228,77 @@ const GM_context = (function() {
 		};
 	}
 	
+	// add a menu
 	function add(menu) {
 		menu.id = inc();
 		menus.set(menu.id, menu);
+		return menu.id;
 	}
 	
+	// remove a menu
 	function remove(id) {
 		menus.delete(id);
 	}
 	
-	function update(id, item, changes) {
-		const menu = menus.get(id);
+	// update item's properties. If @changes includes a `items` key, it would replace item's children.
+	function update(item, changes) {
+		if (changes.type) {
+			throw new Error("item type is not changable");
+		}
 		if (changes.items) {
-			item.items.forEach(i => i.el && i.el.remove());
+			if (item.isBuilt) {
+				item.items.forEach(removeElement);
+			}
 			item.items.length = 0;
-			changes.items.forEach(i => addItem(id, item, i));
+			changes.items.forEach(i => addItem(item, i));
 			delete changes.items;
 		}
 		Object.assign(item, changes);
 		if (item.el) {
-			
+			Object.assign(item.el, changes);
 		}
 	}
 	
-	function addItem(id, parent, item, insertBefore) {}
+	// add an item to parent
+	function addItem(parent, item, pos = parent.items.length) {
+		if (parent.isBuilt) {
+			const el = buildItem(parent, item);
+			if (parent.el) {
+				parent.el.insertBefore(el, parent.el.childNodes[pos]);
+			} else {
+				// search from end, so it would be faster to insert multiple item to end
+				let ref = parent.endEl,
+					i = pos < 0 ? +pos : parent.items.length - pos;
+				while (i-- && ref) {
+					ref = ref.previousSibling;
+				}
+				parent.startEl.parentNode.insertBefore(el, ref);
+			}
+		}
+		parent.items.splice(pos, 0, item);
+	}
 	
-	function removeItem(id, parent, item) {}
+	// remove an item from parent
+	function removeItem(parent, item) {
+		const pos = parent.items.indexOf(item);
+		parent.items.splice(pos, 1);
+		if (item.isBuilt) {
+			removeElement(item);
+		}
+	}
+	
+	// remove item's element
+	function removeElement(item) {
+		if (item.el) {
+			item.el.remove();
+		} else {
+			while (item.startEl.nextSibling != item.endEl) {
+				item.startEl.nextSibling.remove();
+			}
+			item.startEl.remove();
+			item.endEl.remove();
+		}
+	}
 	
 	return {add, remove, update, addItem, removeItem};
 })();
