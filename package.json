@@ -5,23 +5,29 @@
   "author": "eight04 <eight04@gmail.com> (https://github.com/eight04)",
   "bugs": "https://github.com/eight04/GM_context/issues",
   "license": "MIT",
-  "main": "GM_context.js",
+  "main": "index.js",
+  "unpkg": "dist/GM_context.js",
   "dependencies": {},
   "repository": "eight04/GM_context",
   "engines": {
     "firefox": ">=8"
   },
   "scripts": {
-    "lint": "eslint **/*.js",
-    "test": "npm run lint",
+    "test": "eslint **/*.js && mocha",
     "preversion": "npm test",
-    "version": "userscript-meta -u GM_context.js && git add .",
-    "postversion": "git push --follow-tags && npm publish"
+    "version": "npm run build && git add .",
+    "postversion": "git push --follow-tags && npm publish",
+    "build": "(userscript-meta && rollup -c) | n-pipe dist/GM_context.js"
   },
   "devDependencies": {
+    "jsdom": "^11.2.0",
+    "jsdom-global": "^3.0.2",
+    "mocha": "^3.5.3",
+    "rollup": "^0.50.0",
+    "rollup-plugin-commonjs": "^8.2.1",
     "userscript-meta-cli": "^0.2.0"
   },
   "userscript": {
-	"name": "GM_context"
+    "name": "GM_context"
   }
 }
