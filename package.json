@@ -13,7 +13,7 @@
     "firefox": ">=8"
   },
   "scripts": {
-    "test": "eslint **/*.js && mocha",
+    "test": "eslint **/*.js --ignore-pattern dist && mocha",
     "preversion": "npm test",
     "version": "npm run build && git add .",
     "postversion": "git push --follow-tags && npm publish",
