@@ -5,14 +5,14 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Document</title>
-	<script src="GM_context.js"></script>
+	<script src="../GM_context.js"></script>
 	<script>
 		// different types of menu items
 		GM_context.add({
 			context: ["page"],
 			items: [{
 				label: "A normal command",
-				onclick() {alert("hello")}
+				onclick() {alert("Hello!")}
 			}, {
 				label: "A disabled item",
 				disabled: true,
@@ -39,10 +39,10 @@
 				type: "radiogroup",
 				items: [{
 					label: "Radio 1",
-					value: 1
+					value: "FIRST_RADIO"
 				}, {
 					label: "Radio 2",
-					value: 2,
+					value: "SECOND_RADIO",
 					checked: true
 				}],
 				onchange(e, value) {alert(value)}

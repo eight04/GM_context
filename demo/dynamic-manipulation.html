@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+	<script src="../GM_context.js"></script>
+	<script>
+		// hold object reference
+		const item = {label: "A normal item"};
+		const submenu = {
+			type: "submenu",
+			label: "A submenu",
+			items: [
+				{label: "Sub-item 1"},
+				{label: "Sub-item 2"}
+			]
+		};
+		const menu = {
+			context: ["page"],
+			items: [item, submenu]
+		};
+		GM_context.add(menu);
+		
+		let itemCount = 1;
+		let subItemCount = 1;
+		
+		function addItem() {
+			GM_context.addItem(menu, {
+				label: "New item " + itemCount++
+			}, -2);
+		}
+		
+		function removeItem() {
+			GM_context.removeItem(menu, menu.items[1]);
+		}
+		
+		function addSubItem() {
+			GM_context.addItem(submenu, {
+				label: "New sub-item " + subItemCount++
+			});
+		}
+		
+		function removeSubItem() {
+			GM_context.removeItem(submenu, submenu.items[submenu.items.length - 1]);
+		}
+		
+		function updateLabel() {
+			const label = prompt("New label:", item.label);
+			GM_context.update(item, {label});
+		}
+		
+		function updateSubmenu() {
+			GM_context.update(submenu, {
+				items: [{label: "All sub-items are replaced by me"}]
+			});
+		}
+	</script>
+</head>
+<body>
+	<p>Check the contextmenu, click some buttons, and check the contextmenu again.</p>
+	<button onclick="addItem()">Add an item</button>
+	<button onclick="removeItem()">Remove an item</button>
+	<button onclick="addSubItem()">Add a sub-item</button>
+	<button onclick="removeSubItem()">Remove a sub-item</button>
+	<button onclick="updateLabel()">Update label</button>
+	<button onclick="updateSubmenu()">Replace entire submenu</button>
+</body>
+</html>
