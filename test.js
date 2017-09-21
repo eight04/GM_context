@@ -129,12 +129,14 @@ describe("Manipulation", () => {
 
 describe("Initialize", () => {
 	it("don't create container when no context match", done => {
-		GM_context.add({
+		const menu = {
 			items: [],
 			oncontext: () => false
-		});
+		};
+		GM_context.add(menu);
 		setTimeout(() => {
 			assert.equal(document.querySelector("[contextmenu]"), null);
+			GM_context.remove(menu);
 			done();
 		});
 		document.body.dispatchEvent(
@@ -142,9 +144,3 @@ describe("Initialize", () => {
 		);
 	});
 });
-
-function wait(time) {
-	return new Promise(resolve => {
-		setTimeout(resolve, time);
-	});
-}
