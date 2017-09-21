@@ -129,6 +129,10 @@ An item may have following properties:
 Changelog
 ---------
 
+* 0.2.1 (Sep 21, 2017)
+
+	- Fix empty container issue.
+
 * 0.2.0 (Sep 21, 2017)
 
 	- Add test.
