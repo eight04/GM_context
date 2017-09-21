@@ -5,6 +5,20 @@ const assert = require("assert");
 const GM_context = require("./index");
 const sinon = require("sinon");
 
+// https://github.com/tmpvar/jsdom/issues/937
+document.getSelection = () => "";
+
+// https://github.com/tmpvar/jsdom/issues/1555
+Element.prototype.closest = function (selector) {
+    var el = this;
+    while (el) {
+        if (el.matches(selector)) {
+            return el;
+        }
+        el = el.parentElement;
+    }
+};
+
 describe("Different items", () => {
 	const item = {label: "default command"};
 	const submenu = {type: "submenu", label: "a submenu", items: [{
@@ -112,3 +126,25 @@ describe("Manipulation", () => {
 		sinon.assert.calledOnce(onclick);
 	});
 });
+
+describe("Initialize", () => {
+	it("don't create container when no context match", done => {
+		GM_context.add({
+			items: [],
+			oncontext: () => false
+		});
+		setTimeout(() => {
+			assert.equal(document.querySelector("[contextmenu]"), null);
+			done();
+		});
+		document.body.dispatchEvent(
+			new MouseEvent("contextmenu", {bubbles: true})
+		);
+	});
+});
+
+function wait(time) {
+	return new Promise(resolve => {
+		setTimeout(resolve, time);
+	});
+}
