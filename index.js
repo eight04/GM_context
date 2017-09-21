@@ -1,6 +1,5 @@
-const EDITABLE_INPUT = [
-	"text", "number", "email", "number", "search", "tel", "url"
-];
+const EDITABLE_INPUT = {text: true, number: true, email: true, search: true, tel: true, url: true};
+const PROP_EXCLUDE = {parent: true, items: true, onclick: true, onchange: true};
 
 let menus;
 let contextEvent;
@@ -8,6 +7,15 @@ let contextSelection;
 let menuContainer;
 let isInit;
 let increaseNumber = 1;
+
+function objectAssign(target, ref, exclude = {}) {
+	for (const key in ref) {
+		if (!exclude[key]) {
+			target[key] = ref[key];
+		}
+	}
+	return target;
+}
 
 function init() {
 	isInit = true;
@@ -109,7 +117,7 @@ function getContext(e) {
 		context.add("link");
 	}
 	if (el.isContentEditable ||
-		el.nodeName == "INPUT" && EDITABLE_INPUT.includes(el.type) ||
+		el.nodeName == "INPUT" && EDITABLE_INPUT[el.type] ||
 		el.nodeName == "TEXTAREA"
 	) {
 		context.add("editable");
@@ -143,20 +151,16 @@ function buildLabel(s) {
 // build item's element
 function buildItem(parent, item) {
 	let el;
+	item.parent = parent;
 	if (item.type == "submenu") {
 		el = document.createElement("menu");
-		Object.assign(el, item, {items: null});
+		objectAssign(el, item, PROP_EXCLUDE);
 		el.appendChild(buildItems(item, item.items));
 	} else if (item.type == "separator") {
 		el = document.createElement("hr");
 	} else if (item.type == "checkbox") {
 		el = document.createElement("menuitem");
-		Object.assign(el, item);
-		if (item.onclick) {
-			el.onclick = () => {
-				item.onclick.call(el, contextEvent, el.checked);
-			};
-		}
+		objectAssign(el, item, PROP_EXCLUDE);
 	} else if (item.type == "radiogroup") {
 		el = document.createDocumentFragment();
 		item.id = `gm-context-radio-${inc()}`;
@@ -169,31 +173,52 @@ function buildItem(parent, item) {
 		el = document.createElement("menuitem");
 		item.type = "radio";
 		item.radiogroup = parent.id;
-		Object.assign(el, item);
-		if (parent.onchange || item.onclick) {
-			el.onclick = () => {
-				if (parent.onchange) {
-					parent.onchange.call(el, contextEvent, item.value);
-				}
+		objectAssign(el, item, PROP_EXCLUDE);
+	} else {
+		el = document.createElement("menuitem");
+		objectAssign(el, item, PROP_EXCLUDE);
+	}
+	if (item.type !== "radiogroup") {
+		item.el = el;
+		buildHandler(item);
+	}
+	item.isBuilt = true;
+	return el;
+}
+
+function buildHandler(item) {
+	if (item.type === "radiogroup") {
+		if (item.onchange) {
+			item.items.forEach(buildHandler);
+		}
+	} else if (item.type === "radio") {
+		if (!item.el.onclick && (item.parent.onchange || item.onclick)) {
+			item.el.onclick = () => {
 				if (item.onclick) {
-					item.onclick.call(el, contextEvent);
+					item.onclick.call(item.el, contextEvent);
+				}
+				if (item.parent.onchange) {
+					item.parent.onchange.call(item.el, contextEvent, item.value);
+				}
+			};
+		}
+	} else if (item.type === "checkbox") {
+		if (!item.el.onclick && item.onclick) {
+			item.el.onclick = () => {
+				if (item.onclick) {
+					item.onclick.call(item.el, contextEvent, item.el.checked);
 				}
 			};
 		}
 	} else {
-		el = document.createElement("menuitem");
-		Object.assign(el, item);
-		if (item.onclick) {
-			el.onclick = () => {
-				item.onclick.call(el, contextEvent);
+		if (!item.el.onclick && item.onclick) {
+			item.el.onclick = () => {
+				if (item.onclick) {
+					item.onclick.call(item.el, contextEvent);
+				}
 			};
 		}
 	}
-	if (!(el instanceof DocumentFragment)) {
-		item.el = el;
-	}
-	item.isBuilt = true;
-	return el;
 }
 
 // build items' element
@@ -245,9 +270,8 @@ function update(item, changes) {
 	}
 	Object.assign(item, changes);
 	if (item.el) {
-		delete changes.onclick;
-		delete changes.onchange;
-		Object.assign(item.el, changes);
+		buildHandler(item);
+		objectAssign(item.el, changes, PROP_EXCLUDE);
 	}
 }
 

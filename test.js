@@ -4,7 +4,6 @@ const {describe, it} = require("mocha");
 const assert = require("assert");
 const GM_context = require("./index");
 const sinon = require("sinon");
-const {AssertionError} = require("assert");
 
 describe("Different items", () => {
 	const item = {label: "default command"};
@@ -22,7 +21,7 @@ describe("Different items", () => {
 	}, {
 		label: "radio 2",
 		value: "b"
-	}], onchange: sinon.spy()}
+	}], onchange: sinon.spy()};
 	
 	GM_context.buildMenu({
 		items: [item, submenu, separator, checkbox, radiogroup]
