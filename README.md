@@ -129,6 +129,12 @@ An item may have following properties:
 Changelog
 ---------
 
+* 0.2.0 (Sep 21, 2017)
+
+	- Add test.
+	- Add `oncontext` handler.
+	- Add `.addItem`, `.removeItem`, `update`.
+
 * 0.1.0 (Sep 8, 2017)
 
     - First release.
