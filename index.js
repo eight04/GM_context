@@ -25,14 +25,14 @@ function init() {
 		contextSelection = document.getSelection() + "";
 		const context = getContext(e);
 		const matchedMenus = [...menus]
-			.filter(m => !m.context || m.context.some(c => context.has(c)));
+			.filter(m => 
+				(!m.context || m.context.some(c => context.has(c))) &&
+				(!m.oncontext || m.oncontext(e) !== false)
+			);
 		if (!matchedMenus.length) return;
 		const {el: container, destroy: destroyContainer} = createContainer(e);
 		const removeMenus = [];
 		for (const menu of matchedMenus) {
-			if (menu.oncontext && menu.oncontext(e) === false) {
-				continue;
-			}
 			if (!menu.isBuilt) {
 				buildMenu(menu);
 			}
