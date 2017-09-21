@@ -126,9 +126,9 @@ function getContext(e) {
 function buildMenu(menu) {
 	const el = buildItems(null, menu.items);
 	menu.startEl = document.createComment(`<menu ${menu.id}>`);
-	el.prepend(menu.startEl);
+	el.insertBefore(menu.startEl, el.childNodes[0]);
 	menu.endEl = document.createComment("</menu>");
-	el.append(menu.endEl);
+	el.appendChild(menu.endEl);
 	if (menu.static == null) {
 		menu.static = checkStatic(menu);
 	}
@@ -162,7 +162,7 @@ function buildItem(parent, item) {
 		item.id = `gm-context-radio-${inc()}`;
 		item.startEl = document.createComment(`<radiogroup ${item.id}>`);
 		el.appendChild(item.startEl);
-		el = buildItems(item, item.items);
+		el.appendChild(buildItems(item, item.items));
 		item.endEl = document.createComment("</radiogroup>");
 		el.appendChild(item.endEl);
 	} else if (parent && parent.type == "radiogroup") {

@@ -1,12 +1,10 @@
 require("jsdom-global")();
 
 const {describe, it} = require("mocha");
-const {assert, use: chaiUse} = require("chai");
+const assert = require("assert");
 const GM_context = require("./index");
 const sinon = require("sinon");
 const {AssertionError} = require("assert");
-
-chaiUse(require("chai-properties"));
 
 describe("Different items", () => {
 	const item = {label: "default command"};

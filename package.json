@@ -25,6 +25,7 @@
     "mocha": "^3.5.3",
     "rollup": "^0.50.0",
     "rollup-plugin-commonjs": "^8.2.1",
+    "sinon": "^3.3.0",
     "userscript-meta-cli": "^0.2.0"
   },
   "userscript": {
