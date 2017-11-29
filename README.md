@@ -1,6 +1,8 @@
 GM_context
 ==========
 
+** Firefox is going to remove contextmenu support! See https://bugzilla.mozilla.org/show_bug.cgi?id=1372276 **
+
 A JavaScript library to create native HTML5 contextmenu in the browser. This library is designed for userscripts.
 
 Compatibility
