@@ -17,16 +17,18 @@
     "preversion": "npm test",
     "version": "npm run build && git add .",
     "postversion": "git push --follow-tags && npm publish",
-    "build": "(userscript-meta && rollup -c) | n-pipe dist/GM_context.js"
+    "build": "shx mkdir -p dist && (userscript-meta && rollup -c) > dist/GM_context.js"
   },
   "devDependencies": {
-    "jsdom": "^11.2.0",
+    "eslint": "^4.19.1",
+    "jsdom": "^11.11.0",
     "jsdom-global": "^3.0.2",
-    "mocha": "^3.5.3",
-    "rollup": "^0.50.0",
-    "rollup-plugin-commonjs": "^8.2.1",
-    "sinon": "^4.1.2",
-    "userscript-meta-cli": "^0.2.0"
+    "mocha": "^5.2.0",
+    "rollup": "^0.60.1",
+    "rollup-plugin-cjs-es": "^0.3.2",
+    "shx": "^0.3.0",
+    "sinon": "^5.1.0",
+    "userscript-meta-cli": "^0.3.0"
   },
   "userscript": {
     "name": "GM_context"
