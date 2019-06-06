@@ -21,14 +21,14 @@
   },
   "devDependencies": {
     "eslint": "^5.16.0",
-    "jsdom": "^11.11.0",
+    "jsdom": "^15.1.1",
     "jsdom-global": "^3.0.2",
-    "mocha": "^5.2.0",
-    "rollup": "^0.60.1",
+    "mocha": "^6.1.4",
+    "rollup": "^1.14.2",
     "rollup-plugin-cjs-es": "^0.8.0",
-    "shx": "^0.3.0",
-    "sinon": "^5.1.0",
-    "userscript-meta-cli": "^0.3.0"
+    "shx": "^0.3.2",
+    "sinon": "^7.3.2",
+    "userscript-meta-cli": "^0.4.2"
   },
   "userscript": {
     "name": "GM_context"
