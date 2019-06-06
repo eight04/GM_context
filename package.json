@@ -20,12 +20,12 @@
     "build": "shx mkdir -p dist && (userscript-meta && rollup -c) > dist/GM_context.js"
   },
   "devDependencies": {
-    "eslint": "^4.19.1",
+    "eslint": "^5.16.0",
     "jsdom": "^11.11.0",
     "jsdom-global": "^3.0.2",
     "mocha": "^5.2.0",
     "rollup": "^0.60.1",
-    "rollup-plugin-cjs-es": "^0.3.2",
+    "rollup-plugin-cjs-es": "^0.8.0",
     "shx": "^0.3.0",
     "sinon": "^5.1.0",
     "userscript-meta-cli": "^0.3.0"
