@@ -6,5 +6,5 @@ export default {
 		format: "iife",
 		name: "GM_context"
 	},
-	plugins: [commonjs()]
+	plugins: [commonjs({cache: false})]
 };

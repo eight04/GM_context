@@ -332,11 +332,11 @@ var GM_context = (function (exports) {
 	}
 
 	exports.add = add;
-	exports.remove = remove;
 	exports.addItem = addItem;
+	exports.buildMenu = buildMenu;
+	exports.remove = remove;
 	exports.removeItem = removeItem;
 	exports.update = update;
-	exports.buildMenu = buildMenu;
 
 	return exports;
 
